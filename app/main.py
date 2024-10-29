@@ -8,7 +8,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 
 from prophet.plot import plot_plotly
 
-impost os
+import os
 
 app = Flask(__name__)
 
