@@ -8,6 +8,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 
 from prophet.plot import plot_plotly
 
+impost os
 
 app = Flask(__name__)
 
@@ -206,7 +207,7 @@ def forecast():
             "exact_predictions": exact_predictions,  # Return exact predictions for display
         }
     )
-
-
+    
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Render sets PORT environment variable
+    app.run(host="0.0.0.0", port=port)
