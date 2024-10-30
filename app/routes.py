@@ -1,36 +1,19 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Blueprint, request, render_template, jsonify
 import pandas as pd
 from prophet import Prophet
 from sklearn.metrics import mean_absolute_error, r2_score
 from prophet.plot import plot_plotly
 import numpy as np
-import os
+from .utils import find_column_name, filter_outliers_with_z_score, column_mapping
 
-app = Flask(__name__)
+# Define the blueprint
+main = Blueprint("main", __name__)
 
-column_mapping = {
-    "expected_order_status": ["order_status", "status", "order_state", "orderCondition"],
-    "expected_order_date": ["order_date", "date", "order_time", "purchase_date", "orderDate"],
-    "expected_order_count": ["order_count", "orders", "num_orders", "order_quantity", "count_of_orders"],
-}
-
-def find_column_name(possible_names, df_columns):
-    for name in possible_names:
-        if name in df_columns:
-            return name
-    return None
-
-def filter_outliers_with_z_score(series, window=4, threshold=2):
-    rolling_median = series.rolling(window=window, min_periods=1).median()
-    rolling_std = series.rolling(window=window, min_periods=1).std()
-    z_scores = np.abs((series - rolling_median) / rolling_std)
-    return z_scores < threshold
-
-@app.route("/")
+@main.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/forecast", methods=["POST"])
+@main.route("/forecast", methods=["POST"])
 def forecast():
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded"})
@@ -41,7 +24,7 @@ def forecast():
         df = pd.read_csv(file)
     except Exception as e:
         return jsonify({"error": f"Error reading file: {str(e)}"})
-    
+
     actual_order_status = find_column_name(column_mapping["expected_order_status"], df.columns)
     actual_order_date = find_column_name(column_mapping["expected_order_date"], df.columns)
     
@@ -81,7 +64,7 @@ def forecast():
     
     future = prophet_model.make_future_dataframe(periods=12, freq="W")
     forecast = prophet_model.predict(future)
-    future_predictions = forecast.tail(2)[["ds", "yhat"]].to_dict(orient="records")
+    future_predictions = forecast.head(2)[["ds", "yhat"]].to_dict(orient="records")
     
     prophet_df["yhat"] = forecast["yhat"].iloc[: len(prophet_df)]
     mae = mean_absolute_error(prophet_df["y"], prophet_df["yhat"])
@@ -103,7 +86,3 @@ def forecast():
         "plot": plot_json,
         "exact_predictions": exact_predictions
     })
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
