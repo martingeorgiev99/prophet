@@ -79,7 +79,7 @@ def forecast():
     except Exception as e:
         return jsonify({"error": f"Error fitting Prophet model: {str(e)}"})
     
-    future = prophet_model.make_future_dataframe(periods=2, freq="W")
+    future = prophet_model.make_future_dataframe(periods=12, freq="W")
     forecast = prophet_model.predict(future)
     future_predictions = forecast.tail(2)[["ds", "yhat"]].to_dict(orient="records")
     
