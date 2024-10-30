@@ -3,7 +3,6 @@ import pandas as pd
 from prophet import Prophet
 from sklearn.metrics import mean_absolute_error, r2_score
 from prophet.plot import plot_plotly
-import numpy as np
 from .utils import find_column_name, filter_outliers_with_z_score, column_mapping
 
 # Define the blueprint
