@@ -53,11 +53,11 @@ FLASKAPP123/
 
 ## Using Docker
 
-1. Build and run the application using Docker: Make sure Docker is installed on your machine. Then run:
+Build and run the application using Docker: Make sure Docker is installed on your machine. Then run:
   ```bash
   docker-compose up --build
   ```
-  The app will be available at `http://127.0.0.1:5000`.
+The app will be available at `http://127.0.0.1:5000`.
 
 ## Usage
 
