@@ -36,6 +36,8 @@ FLASKAPP123/
 1. **Clone the repository**:
   ```bash
   git clone https://github.com/martingeorgiev99/flaskapp123.git
+  ```
+  ```bash
   cd flaskapp123
   ```
 
