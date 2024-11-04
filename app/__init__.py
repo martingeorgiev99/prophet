@@ -1,10 +1,13 @@
 from flask import Flask
 
 def create_app():
-    # Specify both template and static folders
-    app = Flask(__name__, template_folder="../templates", static_folder="../static")
+    """
+    Create and configure the Flask application.
+    """
+    app = Flask(__name__, template_folder="../templates", static_folder="../static")  # Initialize Flask app with specified template and static folder paths
 
-    from .routes import main
-    app.register_blueprint(main)
+    # Register blueprints
+    from .routes import main  # Import the main blueprint from routes
+    app.register_blueprint(main)  # Register the main blueprint with the app
 
-    return app
+    return app  # Return the configured Flask app
