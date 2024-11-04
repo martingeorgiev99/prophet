@@ -19,11 +19,13 @@ FLASKAPP123/
 │   ├── routes.py            # Defines API routes, including forecasting logic
 │   └── utils.py             # Helper functions for column mapping and outlier detection
 ├── static/
-│   ├── scripts.js           # JavaScript for form submission and Plotly visualization
+│   ├── scripts.js           # JavaScript for form submission and Plotly  visualization
 │   └── styles.css           # CSS for styling the frontend
 ├── templates/
 │   └── index.html           # Main HTML page for file upload and forecast display
 ├── main.py                  # Entry point for running the Flask app
+├── docker-compose.yml       # Docker Compose file for container orchestration
+├── Dockerfile               # Dockerfile for building the application image
 ├── Procfile                 # Procfile for deploying with Gunicorn
 ├── requirements.txt         # Python dependencies
 └── README.md                # Project documentation (this file)
@@ -33,8 +35,10 @@ FLASKAPP123/
 
 1. **Clone the repository**:
   ```bash
-  git clone https://github.com/your-username/your-repo-name.git
-  cd your-repo-name
+  git clone https://github.com/martingeorgiev99/flaskapp123.git
+  ```
+  ```bash
+  cd flaskapp123
   ```
 
 2. **Install dependencies**:
@@ -47,16 +51,22 @@ FLASKAPP123/
   python main.py
   ```
 
+**Alternatively, you can use docker to serve locally**:
+```bash
+docker-compose up --build
+```
+
   The app will be available at `http://127.0.0.1:5000`.
 
 ## Usage
 
 1. Open the app in your browser.
 2. Upload a CSV file with the required columns:
+  - `order_count` (or other valid names such as `orders`, `order_quantity`; each row can also be detected as an `order`) 
   - `order_status` (or other valid names such as `status`, `order_state`)
   - `order_date` (or other valid names like `date`, `purchase_date`)
 3. Click "Upload" to submit the file.
-4. View the forecast results, including the Mean Absolute Error (MAE), R² score, and a plot of the forecasted sales.
+4. View the forecast results, including the Mean Absolute Error (MAE), R² score, and an interactive plot of the forecasted sales.
 
 ## API Endpoints
 
@@ -67,7 +77,7 @@ FLASKAPP123/
 - **Request Body**: Form-data with a single file field (`file`), which should contain the CSV file.
 - **Response**:
   - **Success**: JSON with predictions, MAE, R² score, and plot data.
-  - **Error**: JSON with an error message explaining any issues with the file or forecasting.
+  - **Error**: An according message error with an explanation of what went wrong.
 
 ## Configuration
 
@@ -126,6 +136,7 @@ The project relies on the following libraries:
 - **Scikit-learn**: For evaluating the forecast with MAE and R².
 - **Plotly**: For interactive forecast visualization.
 - **Gunicorn**: For deployment in production.
+- (Optional) **Docker**: For local serving.
 
 All dependencies are listed in `requirements.txt`. Install them using:
 
