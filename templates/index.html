@@ -1,20 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sales Forecast</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales Forecast</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
 <body>
-  <div class="background"><canvas id="particles-js"></canvas></div>
-  <h1>Upload CSV for Sales Forecast</h1>
-  <form id="forecastForm" action="/forecast" method="POST" enctype="multipart/form-data">
-    <input type="file" name="file" required />
-    <input type="submit" value="Upload" />
-  </form>
-  <div id="forecastPlot"></div>
-  <div id="forecastError"></div>
-  <div id="forecastMetrics"></div>
-  <div id="exactPredictions"></div>
-  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <div class="background"><canvas id="particles-js"></canvas></div>  <!-- Background particles effect -->
+    <h1>Upload CSV for Sales Forecast</h1>
+
+    <form id="forecastForm" action="/forecast" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" required />  <!-- File input for CSV upload -->
+        <input type="submit" value="Upload" />  <!-- Submit button for the form -->
+    </form>
+
+    <div id="loading" style="display: none;">  <!-- Loading indicator, hidden by default -->
+        Loading...
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <div id="forecastPlot"></div>  <!-- Container for the forecast plot -->
+    <div id="forecastError" style="color: red;"></div>  <!-- Error message display -->
+    <div id="forecastMetrics"></div>  <!-- Container for displaying metrics -->
+    <div id="exactPredictions"></div>  <!-- Container for exact predictions -->
+
+    <!-- Load JavaScript at the end for better performance -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js" defer></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}" defer></script>
 </body>
+</html>
