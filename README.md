@@ -27,6 +27,8 @@ FLASKAPP123/
 ├── docker-compose.yml       # Docker Compose file for container orchestration
 ├── Dockerfile               # Dockerfile for building the application image
 ├── Procfile                 # Procfile for deploying with Gunicorn
+├── Dockerfile               # Dockerfile for containerizing the application
+├── docker-compose.yml       # Docker Compose file for running the app with services
 ├── requirements.txt         # Python dependencies
 └── README.md                # Project documentation (this file)
 ```
@@ -57,6 +59,14 @@ docker-compose up --build
 ```
 
   The app will be available at `http://127.0.0.1:5000`.
+
+## Using Docker
+
+Build and run the application using Docker: Make sure Docker is installed on your machine. Then run:
+  ```bash
+  docker-compose up --build
+  ```
+The app will be available at `http://127.0.0.1:5000`.
 
 ## Usage
 
