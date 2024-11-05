@@ -10,11 +10,12 @@ from .utils import (find_column_name, filter_outliers_with_z_score, column_mappi
 import logging
 import time
 
-# Configure logging
+# Configure logging to log both to a file and to the console
 logging.basicConfig(level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     handlers=[logging.FileHandler("app.log"), logging.StreamHandler()])
 
+# Create the main Blueprint for routing
 main = Blueprint("main", __name__)
 
 @main.route("/")  # Route for the index page
@@ -42,10 +43,11 @@ def forecast():
         logging.error(f"Error reading file: {str(e)}")
         return jsonify({"error": f"Error reading file: {str(e)}"}), 400
 
-    # Find required columns using mapping
+    # Find required columns using the column_mapping in utils
     actual_order_status = find_column_name(column_mapping["expected_order_status"], df.columns)
     actual_order_date = find_column_name(column_mapping["expected_order_date"], df.columns)
     
+    # Check if essential columns are missing
     if not actual_order_status or not actual_order_date:
         missing_columns = []
         if not actual_order_status:
@@ -55,7 +57,7 @@ def forecast():
         logging.error(f"Missing required column(s): {', '.join(missing_columns)}")
         return jsonify({"error": f"Missing required column(s): {', '.join(missing_columns)}"}), 400
 
-    # Ensure 'order_status' is string type
+    # Ensure the 'order_status' column is of string type
     if not pd.api.types.is_string_dtype(df[actual_order_status]):
         logging.error("Invalid data type for order status.")
         return jsonify({"error": "Invalid data type for 'order_status'. Expected string values."}), 400
@@ -74,63 +76,63 @@ def forecast():
         logging.error("No valid data after cleaning.")
         return jsonify({"error": "No valid data after cleaning. Please check your file."}), 400
 
-    # Aggregate weekly orders
+    # Aggregate orders on a weekly basis
     weekly_orders = aggregate_weekly_orders(df, actual_order_date)
     if weekly_orders.empty:
         logging.error("No data after aggregation.")
         return jsonify({"error": "No data available after aggregation. Please check your file."}), 400
 
-    # Filter outliers
+    # Filter outliers from the weekly data
     weekly_orders = weekly_orders[filter_outliers_with_z_score(weekly_orders["order_count"])]
 
-    # Check if sufficient data is available after filtering
+    # Check if there’s enough data left for model training after filtering
     if weekly_orders.shape[0] < 2:
         logging.warning("Not enough valid data to make a forecast.")
         return jsonify({"error": "Not enough valid data to make a forecast. Please provide more data."}), 400
 
-    # Fill missing values for continuity
+    # Fill missing weekly values to maintain continuity
     weekly_orders = weekly_orders.set_index("order_week").asfreq("W", method="ffill")
     weekly_orders["order_count"].fillna(weekly_orders["order_count"].median(), inplace=True)
 
-    # Prepare data for Prophet model
+    # Prepare the data for Prophet model
     prophet_df = weekly_orders.reset_index().rename(columns={"order_week": "ds", "order_count": "y"})
 
-    # Fit Prophet model
+    # Fit the Prophet model
     try:
         prophet_model = fit_prophet_model(prophet_df)
     except Exception as e:
         logging.error(f"Error fitting Prophet model: {str(e)}")
         return jsonify({"error": f"Error fitting Prophet model: {str(e)}"}), 400
 
-    # Generate forecast
+    # Generate the forecast
     try:
-        future = prophet_model.make_future_dataframe(periods=12, freq="W")
-        forecast = prophet_model.predict(future)
+        future = prophet_model.make_future_dataframe(periods=12, freq="W")  # Create future DataFrame for 12 weeks
+        forecast = prophet_model.predict(future)  # Generate the forecast
     except Exception as e:
         logging.error(f"Error generating forecast: {str(e)}")
         return jsonify({"error": f"Error generating forecast: {str(e)}"}), 400
 
-    # Calculate metrics
+    # Calculate MAE and R² for forecast evaluation
     prophet_df["yhat"] = forecast["yhat"].iloc[: len(prophet_df)]
     mae = mean_absolute_error(prophet_df["y"], prophet_df["yhat"])
     r2 = r2_score(prophet_df["y"], prophet_df["yhat"])
 
-    # Generate plot
+    # Generate forecast plot
     try:
-        fig = plot_plotly(prophet_model, forecast)
-        fig.update_layout(hovermode="x unified")
-        plot_json = fig.to_json()
+        fig = plot_plotly(prophet_model, forecast)  # Create an interactive plot
+        fig.update_layout(hovermode="x unified")  # Unified hover mode for better user experience
+        plot_json = fig.to_json()  # Convert plot to JSON format for the response
     except Exception as e:
         logging.error(f"Error generating plot: {str(e)}")
         return jsonify({"error": f"Error generating plot: {str(e)}"}), 400
 
-    # Prepare exact predictions
-    last_historical_date = prophet_df["ds"].max()
-    future_predictions_df = forecast[forecast["ds"] > last_historical_date]
-    exact_predictions = future_predictions_df[["ds", "yhat"]].head(4).to_dict(orient="records")
+    # Extract exact predictions for future weeks
+    last_historical_date = prophet_df["ds"].max()  # Find the last date in the historical data
+    future_predictions_df = forecast[forecast["ds"] > last_historical_date]  # Extract only future predictions
+    exact_predictions = future_predictions_df[["ds", "yhat"]].head(4).to_dict(orient="records")  # First 4 predictions
 
-    # Send final response
-    elapsed_time = time.time() - start_time
+    # Send the final response with predictions, metrics, and plot
+    elapsed_time = time.time() - start_time  # Calculate elapsed time for processing
     logging.info(f"Total computation time: {elapsed_time:.2f} seconds.")
     return jsonify({
         "predictions": forecast[["ds", "yhat"]].head(2).to_dict(orient="records"),

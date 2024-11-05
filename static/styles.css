@@ -1,10 +1,12 @@
-body, html {
+/* body,html{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;color:white;background:#000}#forecastForm{position:relative;z-index:2;background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;margin:10px auto;width:400px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,0.5)}input[type="file"],input[type="submit"]{padding:10px;margin-bottom:10px;background-color:white;color:black;border:none;border-radius:5px;cursor:pointer}input[type="submit"]:hover{background-color:white}#forecastPlot,#forecastError,#forecastMetrics,#exactPredictions{position:relative;z-index:2;text-align:center;font-size:1.1em;line-height:1}#forecastPlot{padding:15px;margin:0 auto;max-width:800px;display:flex;justify-content:center;opacity:0.93}#exactPredictions{max-width:600px;margin:0 auto;padding-top:10px}h1{margin-top:10px;font-size:1.8em;text-align:center;position:relative;z-index:2;color:white}#forecastError{color:red;font-weight:bold;margin-top:10px}.background{position:absolute;top:0;left:0;width:100%;height:100%;background:black;z-index:1;overflow:hidden}canvas{display:block;position:absolute;top:0;left:0}#loading{position:fixed;top:162px;left:50%;transform:translateX(-50%);z-index:1000;background-color:rgba(50,50,50,0.85);padding:20px;border-radius:10px;width:90%;max-width:400px;text-align:center;color:#fff;font-weight:bold;font-family:Arial,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,0.5);opacity:0;display:none;transition:opacity 0.5s ease}.progress-bar{width:100%;height:14px;background-color:#555;border-radius:7px;overflow:hidden;margin-top:12px}.progress-fill{width:0;height:100%;background:linear-gradient(90deg,#13421b,#00ff0d)!important;box-shadow:0 0 12px rgba(76,175,80,0.6)!important;border-radius:7px;transition:width 0.6s ease}@keyframes fadeInOut{0%,100%{opacity:1}50%{opacity:0.8}}#loading{animation:fadeInOut 1.5s infinite} */
+
+body,
+html {
   height: 100%;
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   color: white;
   background: #000;
-  overflow: hidden;
 }
 
 #forecastForm {
@@ -19,7 +21,8 @@ body, html {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-input[type="file"], input[type="submit"] {
+input[type="file"],
+input[type="submit"] {
   padding: 10px;
   margin-bottom: 10px;
   background-color: white;
@@ -33,22 +36,30 @@ input[type="submit"]:hover {
   background-color: white;
 }
 
-#forecastPlot, #forecastError, #forecastMetrics, #exactPredictions {
+#forecastPlot,
+#forecastError,
+#forecastMetrics,
+#exactPredictions {
   position: relative;
   z-index: 2;
   text-align: center;
-  padding-top: 15px;
   font-size: 1.1em;
   line-height: 1;
 }
 
 #forecastPlot {
+  padding: 15px;
   margin: 0 auto;
-  margin-top: 15px;
-  width: 80%;
   max-width: 800px;
   display: flex;
   justify-content: center;
+  opacity: 0.93;
+}
+
+#exactPredictions {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 10px;
 }
 
 h1 {
@@ -58,6 +69,12 @@ h1 {
   position: relative;
   z-index: 2;
   color: white;
+}
+
+#forecastError {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .background {
@@ -76,4 +93,59 @@ canvas {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+#loading {
+  position: fixed;
+  top: 162px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background-color: rgba(50, 50, 50, 0.85);
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  color: #ffffff;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  display: none;
+  transition: opacity 0.5s ease;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 14px;
+  background-color: #555;
+  border-radius: 7px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.progress-fill {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #13421b, #00ff0d) !important;
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.6) !important;
+  border-radius: 7px;
+  transition: width 0.6s ease;
+}
+
+@keyframes fadeInOut {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+#loading {
+  animation: fadeInOut 1.5s infinite;
 }

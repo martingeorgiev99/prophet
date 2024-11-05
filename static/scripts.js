@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         method: "POST",  // Send a POST request
         body: formData,  // Attach form data
       });
-
+      
       loading.style.opacity = "0";  // Fade out loading indicator
       setTimeout(() => {
         loading.style.display = "none";  // Hide loading indicator
