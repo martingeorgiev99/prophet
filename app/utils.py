@@ -1,3 +1,5 @@
+# utils.py
+
 import numpy as np
 import pandas as pd
 from prophet import Prophet
@@ -40,48 +42,47 @@ def find_column_name(possible_names, df_columns):
     """
     Find the first matching column name from a list of possibilities.
     """
-    matched_column = next((name for name in possible_names if name in df_columns), None)
-    return matched_column
+    return next((name for name in possible_names if name in df_columns), None)
 
 def filter_outliers_with_z_score(series, window=4, threshold=2):
     """
     Remove outliers from a Pandas Series using Z-score based on a rolling window.
     """
-    rolling_median = series.rolling(window=window, min_periods=1).median()  # Calculate rolling median
-    rolling_std = series.rolling(window=window, min_periods=1).std()  # Calculate rolling standard deviation
-    z_scores = np.abs((series - rolling_median) / rolling_std)  # Compute Z-scores
-    return z_scores < threshold  # Return boolean mask for non-outliers
+    rolling_median = series.rolling(window=window, min_periods=1).median()
+    rolling_std = series.rolling(window=window, min_periods=1).std()
+    z_scores = np.abs((series - rolling_median) / rolling_std)
+    return z_scores < threshold
 
 def clean_data(df, actual_order_status, actual_order_date):
     """
     Clean and preprocess the input DataFrame.
     """
-    df = df.dropna(subset=[actual_order_status])  # Remove rows with NaN in order status
-    df = df[df[actual_order_status] != "Отказана"]  # Filter out canceled orders
-    df[actual_order_date] = pd.to_datetime(df[actual_order_date], errors="coerce")  # Convert dates to datetime
-    return df.dropna(subset=[actual_order_date])  # Drop rows with NaN in order date
+    df = df.dropna(subset=[actual_order_status])
+    df = df[df[actual_order_status] != "Отказана"]
+    df[actual_order_date] = pd.to_datetime(df[actual_order_date], errors="coerce")
+    return df.dropna(subset=[actual_order_date])
 
 def aggregate_weekly_orders(df, actual_order_date):
     """
     Aggregate order counts on a weekly basis.
     """
     return (df
-            .assign(order_week=df[actual_order_date].dt.to_period("W").apply(lambda r: r.start_time))  # Create weekly periods
-            .groupby("order_week")  # Group by week
-            .size()  # Count orders per week
-            .reset_index(name="order_count"))  # Return DataFrame with order counts
+            .assign(order_week=df[actual_order_date].dt.to_period("W").apply(lambda r: r.start_time))
+            .groupby("order_week")
+            .size()
+            .reset_index(name="order_count"))
 
 def fit_prophet_model(prophet_df):
     """
     Fit the Prophet model to the prepared DataFrame.
     """
     model = Prophet(
-        yearly_seasonality=True,  # Enable yearly seasonality
-        weekly_seasonality=False,  # Disable weekly seasonality
-        daily_seasonality=False,  # Disable daily season
-        seasonality_mode="multiplicative",  # Use multiplicative seasonality
-        changepoint_prior_scale=0.15,  # Sensitivity to changes in the trend
-        seasonality_prior_scale=10.0,  # Sensitivity to seasonality
+        yearly_seasonality=True,
+        weekly_seasonality=False,
+        daily_seasonality=False,
+        seasonality_mode="multiplicative",
+        changepoint_prior_scale=0.15,
+        seasonality_prior_scale=10.0,
     )
-    model.fit(prophet_df)  # Fit the model to the data
-    return model  # Return the fitted model
+    model.fit(prophet_df)
+    return model
