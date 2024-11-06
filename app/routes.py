@@ -142,7 +142,7 @@ def forecast():
     elapsed_time = time.time() - start_time  # Calculate elapsed time for processing
     logging.info(f"Total computation time: {elapsed_time:.2f} seconds.")
     return jsonify({
-        "predictions": forecast[["ds", "yhat"]].head(2).to_dict(orient="records"),
+        "predictions": forecast[["ds", "yhat"]].head(5).to_dict(orient="records"),
         "mae": mae,
         "r2": r2,
         "exact_predictions": exact_predictions,

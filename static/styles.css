@@ -1,39 +1,79 @@
-/* body,html{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;color:white;background:#000}#forecastForm{position:relative;z-index:2;background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;margin:10px auto;width:400px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,0.5)}input[type="file"],input[type="submit"]{padding:10px;margin-bottom:10px;background-color:white;color:black;border:none;border-radius:5px;cursor:pointer}input[type="submit"]:hover{background-color:white}#forecastPlot,#forecastError,#forecastMetrics,#exactPredictions{position:relative;z-index:2;text-align:center;font-size:1.1em;line-height:1}#forecastPlot{padding:15px;margin:0 auto;max-width:800px;display:flex;justify-content:center;opacity:0.93}#exactPredictions{max-width:600px;margin:0 auto;padding-top:10px}h1{margin-top:10px;font-size:1.8em;text-align:center;position:relative;z-index:2;color:white}#forecastError{color:red;font-weight:bold;margin-top:10px}.background{position:absolute;top:0;left:0;width:100%;height:100%;background:black;z-index:1;overflow:hidden}canvas{display:block;position:absolute;top:0;left:0}#loading{position:fixed;top:162px;left:50%;transform:translateX(-50%);z-index:1000;background-color:rgba(50,50,50,0.85);padding:20px;border-radius:10px;width:90%;max-width:400px;text-align:center;color:#fff;font-weight:bold;font-family:Arial,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,0.5);opacity:0;display:none;transition:opacity 0.5s ease}.progress-bar{width:100%;height:14px;background-color:#555;border-radius:7px;overflow:hidden;margin-top:12px}.progress-fill{width:0;height:100%;background:linear-gradient(90deg,#13421b,#00ff0d)!important;box-shadow:0 0 12px rgba(76,175,80,0.6)!important;border-radius:7px;transition:width 0.6s ease}@keyframes fadeInOut{0%,100%{opacity:1}50%{opacity:0.8}}#loading{animation:fadeInOut 1.5s infinite} */
-
-body,
-html {
+/* General styling */
+body, html {
   height: 100%;
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   color: white;
   background: #000;
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+}
+
+/* Fade-in animation for page load */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 #forecastForm {
   position: relative;
   z-index: 2;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  border-radius: 10px;
-  margin: 10px auto;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent glass effect */
+  padding: 15px;
+  border-radius: 15px;
+  margin: 20px auto;
   width: 400px;
   text-align: center;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.25), inset 0px 4px 8px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px); /* Glassmorphism */
 }
 
 input[type="file"],
 input[type="submit"] {
   padding: 10px;
   margin-bottom: 10px;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.8); /* Transparent button background */
   color: black;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
+/* Button Hover and Active Effects */
+input[type="submit"] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
 input[type="submit"]:hover {
-  background-color: white;
+  transform: scale(1.05);
+  box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.4);
+  background-color: #eeeeee;
+  color: #333333;
+}
+
+input[type="submit"]:active {
+  transform: scale(0.98);
+  box-shadow: 0px 2px 10px rgba(255, 255, 255, 0.3);
+  background-color: #dddddd;
+  color: #222222;
+}
+
+/* File Upload Button Focus Effect */
+input[type="file"] {
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+input[type="file"]:focus {
+  box-shadow: 0 0 10px rgba(0, 150, 255, 0.7);
+}
+
+input[type="file"] {
+  transition: transform 0.2s ease;
+}
+
+input[type="file"]:hover {
+  transform: scale(1.02);
 }
 
 #forecastPlot,
@@ -77,6 +117,7 @@ h1 {
   margin-top: 10px;
 }
 
+/* Particle Canvas Background */
 .background {
   position: absolute;
   top: 0;
@@ -95,6 +136,7 @@ canvas {
   left: 0;
 }
 
+/* Loading Indicator and Progress Bar */
 #loading {
   position: fixed;
   top: 162px;
@@ -128,22 +170,15 @@ canvas {
 .progress-fill {
   width: 0;
   height: 100%;
-  background: linear-gradient(90deg, #13421b, #00ff0d) !important;
-  box-shadow: 0 0 12px rgba(76, 175, 80, 0.6) !important;
+  background: linear-gradient(90deg, #13421b, #00ff0d);
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.6);
   border-radius: 7px;
   transition: width 0.6s ease;
 }
 
 @keyframes fadeInOut {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.8;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
 
 #loading {
