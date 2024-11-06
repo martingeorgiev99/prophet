@@ -119,9 +119,16 @@ def forecast():
 
     # Generate forecast plot
     try:
-        fig = plot_plotly(prophet_model, forecast)  # Create an interactive plot
-        fig.update_layout(hovermode="x unified")  # Unified hover mode for better user experience
-        plot_json = fig.to_json()  # Convert plot to JSON format for the response
+        fig = plot_plotly(prophet_model, forecast)  # Create plot
+        fig.update_layout(hovermode="x unified")  # Set hover info
+        fig.update_traces(
+            hovertemplate=(
+                "<b>Date</b>: %{x}<br>"
+                "<b>Count</b>: %{y:.2f}<br>"
+            ),
+        )
+        plot_json = fig.to_json()  # Convert plot to JSON
+        logging.info("Plot generated successfully.")
     except Exception as e:
         logging.error(f"Error generating plot: {str(e)}")
         return jsonify({"error": f"Error generating plot: {str(e)}"}), 400
@@ -129,7 +136,7 @@ def forecast():
     # Extract exact predictions for future weeks
     last_historical_date = prophet_df["ds"].max()  # Find the last date in the historical data
     future_predictions_df = forecast[forecast["ds"] > last_historical_date]  # Extract only future predictions
-    exact_predictions = future_predictions_df[["ds", "yhat"]].head(4).to_dict(orient="records")  # First 4 predictions
+    exact_predictions = future_predictions_df[["ds", "yhat"]].head(5).to_dict(orient="records")  # First 4 predictions
 
     # Send the final response with predictions, metrics, and plot
     elapsed_time = time.time() - start_time  # Calculate elapsed time for processing
