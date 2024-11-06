@@ -3,36 +3,41 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("forecastForm");
   const loading = document.getElementById("loading");
   const progressFill = document.querySelector(".progress-fill");
+  const forecastPlot = document.getElementById("forecastPlot");
 
   // Handle form submission
   form.addEventListener("submit", async function (event) {
     event.preventDefault();  // Prevent default form submission behavior
 
+    // Position the loading indicator as an overlay within forecast plot
     loading.style.display = "block";  // Show loading indicator
+    forecastPlot.appendChild(loading);  // Append loading overlay to forecast plot
+
     setTimeout(() => {
       loading.style.opacity = "1";  // Fade in loading indicator
     }, 10);
 
     const formData = new FormData(form);  // Create FormData object for the form
 
-    progressFill.style.width = "0%";  // Reset progress bar width
-    setTimeout(() => {
-      progressFill.style.width = "100%";  // Animate progress bar fill
-    }, 1000);
+    // Make the fetch request and track upload progress
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/forecast", true);
 
-    try {
-      const response = await fetch("/forecast", {
-        method: "POST",  // Send a POST request
-        body: formData,  // Attach form data
-      });
+    xhr.upload.addEventListener("progress", function (event) {
+      if (event.lengthComputable) {
+        const percentComplete = (event.loaded / event.total) * 100;
+        progressFill.style.width = `${percentComplete}%`;  // Update progress bar
+      }
+    });
 
+    xhr.addEventListener("load", function () {
       loading.style.opacity = "0";  // Fade out loading indicator
       setTimeout(() => {
         loading.style.display = "none";  // Hide loading indicator
         progressFill.style.width = "0";  // Reset progress bar
       }, 500);
 
-      const result = await response.json();  // Parse JSON response
+      const result = JSON.parse(xhr.responseText);
 
       // Handle errors in the response
       if (result.error) {
@@ -54,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
           .join("<br><br>");
         document.getElementById("exactPredictions").innerHTML = `<strong>Predicted Values: (next 5 weeks)</strong><br>${formattedPredictions}`;
 
-        // Render the plot using Plotly
+        // Render the plot with animation
         Plotly.newPlot(
           "forecastPlot",
           JSON.parse(result.plot).data.map((trace, index) => {
@@ -76,12 +81,29 @@ document.addEventListener("DOMContentLoaded", function () {
               tickfont: { color: "#000000" },
               titlefont: { color: "#000000" },
             },
+          },
+          {
+            // Animation settings
+            transition: {
+              duration: 1000, // Duration of the transition in milliseconds
+              easing: "cubic-in-out" // Smoothing effect
+            },
+            frame: {
+              duration: 500, // Duration of each frame in milliseconds
+              redraw: true
+            }
           }
         );
       }
-    } catch (error) {
-      console.error("Error during fetch:", error);  // Log any fetch errors
-    }
+    });
+
+    xhr.addEventListener("error", function () {
+      console.error("Error during upload.");
+      loading.style.opacity = "0";
+      setTimeout(() => loading.style.display = "none", 500);
+    });
+
+    xhr.send(formData);
   });
 });
 
@@ -143,7 +165,7 @@ Particle.prototype.draw = function () {
   ctx.beginPath();
   ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
   ctx.closePath();
-  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";  // White fill color
+  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
   ctx.fill();
 };
 
@@ -158,7 +180,7 @@ function connectParticles() {
         ctx.beginPath();
         ctx.moveTo(particles[i].x, particles[i].y);
         ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / maxDistance})`;  // Line opacity based on distance
+        ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / maxDistance})`;
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
@@ -168,13 +190,13 @@ function connectParticles() {
 
 // Animate particles on canvas
 function animateParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach((particle) => {
-    particle.update();  // Update particle position
-    particle.draw();  // Draw particle
+    particle.update();
+    particle.draw();
   });
-  connectParticles();  // Draw connections between particles
-  requestAnimationFrame(animateParticles);  // Request next animation frame
+  connectParticles();
+  requestAnimationFrame(animateParticles);
 }
 
 // Adjust canvas size on window resize
