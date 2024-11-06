@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
               `Date: ${new Date(pred.ds).toLocaleDateString()}<br>Predicted Orders: ${pred.yhat.toFixed(2)}`
           )
           .join("<br><br>");
-        document.getElementById("exactPredictions").innerHTML = `<strong>Predicted Values: (next 4 weeks)</strong><br>${formattedPredictions}`;
+        document.getElementById("exactPredictions").innerHTML = `<strong>Predicted Values: (next 5 weeks)</strong><br>${formattedPredictions}`;
 
         // Render the plot using Plotly
         Plotly.newPlot(
