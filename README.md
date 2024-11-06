@@ -1,4 +1,4 @@
-# Flask Sales Forecast App
+# Flask Sales Forecast App - Facebook Prophet
 
 This application provides a web interface for uploading a CSV file containing sales data. It processes the data, performs time series forecasting using Facebook Prophet, and visualizes the forecast with Plotly. This app is useful for predicting weekly sales figures based on historical data.
 
