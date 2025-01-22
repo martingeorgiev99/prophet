@@ -52,7 +52,6 @@
     const username = prompt("Enter username:");
     const password = prompt("Enter password:");
 
-    // POST request to your Heroku endpoint
     fetch('https://prophet-forecasting-92626a26b25c.herokuapp.com/getForecastChart', {
       method: 'POST',
       headers: {
